@@ -1,66 +1,31 @@
-## 事务
 事务支持是在引擎层实现的，有的存储引擎支持事务，有的存储引擎不支持事务。事务具有原子性、一致性、隔离性、持久性
 
-### 自动提交
+## 启动方式
+显式启动事务语句
 ```sql
-# 关闭自动提交
-set autocommit = 0;
-```
-```sql
-# 开启自动提交
-set autocommit = 1;
-```
-
-
-## 控制语句
-### 开启事务
-```sql
+-- 开启事务
 START TRANSACTION;
 ```
 ```sql
+-- 开启事务
 BEGIN;
 ```
 
-### 提交事务
 ```sql
+-- 提交事务
 COMMIT;
 ```
 
-当提交事务后，对数据库的修改是永久性的
-
-### 回滚
 ```sql
+-- 回滚
 ROLLBACK;
 ```
+
+关闭自动提交
 ```sql
-ROLLBACK TO [SAVEPOINT];
+set autocommit = 0
 ```
-
-撤销正在进行的所有没有提交的修改，或者将事务回滚到某个保存点
-
-### 创建保存点
-```sql
-SAVEPOINT;
-```
-
-一个事务中可以存在多个保存点
-
-### 删除某个保存点
-```sql
-RELEASE SAVEPOINT;
-```
+将这个线程的自动提交关掉。意味着只执行一个 select 语句，这个事务就启动了，而且并不会自动提交。这个事务持续存在直到你主动执行 commit 或 rollback 语句，或者断开连接。建议总是使用 set autocommit=1, 通过显式语句的方式来启动事务
 
 
-```sql
-CREATE TABLE test(name varchar(255), PRIMARY KEY (name)) ENGINE=InnoDB;
-
-BEGIN;
-INSERT INTO test SELECT '关羽';
-COMMIT;
-
-BEGIN;
-INSERT INTO test SELECT '张飞';
-ROLLBACK;
-
-SELECT * FROM test;
-```
+通过 SET MAX_EXECUTION_TIME 命令，来控制每个语句执行的最长时间，避免单个语句意外执行太长时间
